@@ -1,0 +1,29 @@
+neoeime
+Description:
+An input method based on Java(TM) Input Method Framework.
+you can use it as Pinyin IME on java plantform.
+
+Usages:
+copy neoeime-ver.jar to jre/lib/ext,
+then you can active it by choosing the "Select Input Method" menu 
+from the menu that can be pulled down from the top left corner 
+of the window (the System menu on Windows, Window menu on Solaris),
+then choose "NeoeIME" and any locale from the popup menu.
+Or you can press a hotkey, see http://javadesktop.org/articles/InputMethod/index.html
+
+Feathers:
+- Unicode. And Locale-indepentant.
+- all GBK character in Pinyin
+- over 40000 Chinese words.
+- character and words is easy to extend by yourself, 
+  they are written in UTF-8 plain text file in the jar.
+- shift-key to temporary enable/disable IME.
+
+the IME has tested on JEdit on Win32.
+
+TODO
+- auto change candidate order.
+
+
+Have a try! It really nice on Linux now because luck of unicode ime support somehow.
+
