@@ -2,6 +2,7 @@ neoeime
 Description:
 An input method based on Java(TM) Input Method Framework.
 you can use it as Pinyin IME on java plantform.
+update: neoeime is designed to easily used by any IME framework.
 
 Usages:
 copy neoeime-ver.jar to jre/lib/ext,

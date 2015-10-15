@@ -3,10 +3,10 @@ package neoe.ime;
 import java.util.ArrayList;
 import java.util.List;
 
-import neoe.ime.cn.CharPyLib;
-import neoe.ime.cn.WordPyLib;
+import neoe.ime.cn.CnCharLib;
+import neoe.ime.cn.CnWordLib;
 import neoe.ime.jp.JpWordLib;
-import neoe.ime.jp.KanaLib;
+import neoe.ime.jp.JpCharLib;
 import neoe.ime.spi.NeoeInputMethod;
 
 public class ImeImpB implements Ime {
@@ -28,17 +28,29 @@ public class ImeImpB implements Ime {
 
 	public static void main(String[] args) throws Exception {
 		ImeImpB b = new ImeImpB(null);
-		b.imeType=JP;
+		b.imeType = CN;
 		while (true) {
 			if (b.initFinished)
 				break;
 			Thread.sleep(1000);
 		}
-		b.find("aiyisiniuxiaodong");
+
+		b.find("nihaoniuxiaodong");
 		while (true) {
 			System.out.println(b.out());
 			// b.next();
 			System.out.println("s=" + b.select(0));
+			System.out.println("r=" + b.cur);
+			if (b.getCount() == 0)
+				break;
+		}
+		b.find("niux");
+		while (true) {
+			System.out.println(b.out());
+			// b.next();
+			System.out.println("s=" + b.select(0));
+			System.out.println("r=" + b.cur);
+
 			if (b.getCount() == 0)
 				break;
 		}
@@ -67,17 +79,18 @@ public class ImeImpB implements Ime {
 	public void find(String py) {
 		int len = py.length();
 		cur = py;
-		result.clear();
+		NoDupList ndl = new NoDupList();
 		for (int i = len; i > 0; i--) {
 			String sub = py.substring(0, i);
 			if (imeType == CN) {
-				result.addAll(cnWord.find(sub));
-				result.addAll(cnChar.find(sub));
+				ndl.addAll(cnWord.find(sub));
+				ndl.addAll(cnChar.find(sub));
 			} else if (imeType == JP) {// jp selected
-				result.addAll(jpChar.find(sub));
-				result.addAll(jpWord.find(sub));
+				ndl.addAll(jpChar.find(sub));
+				ndl.addAll(jpWord.find(sub));
 			}
 		}
+		result=ndl.data;
 		// System.out.println("count=" + result.size());
 		start = 0;
 	}
@@ -103,18 +116,18 @@ public class ImeImpB implements Ime {
 		}
 	}
 
-	private void init() {		
+	private void init() {
 		try {
-			cnChar = new CharPyLib();
-			cnWord = new WordPyLib((CharPyLib) cnChar);
-			jpChar = new KanaLib();
-			jpWord = new JpWordLib((KanaLib) jpChar);
+			cnChar = new CnCharLib();
+			cnWord = new CnWordLib((CnCharLib) cnChar);
+			jpChar = new JpCharLib();
+			jpWord = new JpWordLib((JpCharLib) jpChar);
 
 			ImeLib[] libs = new ImeLib[] { cnChar, cnWord, jpChar, jpWord };
 			for (ImeLib lib : libs) {
 				Thread t = lib.getInitThread();
 				if (t != null) {
-					t.join();// memory leaked, but should be no problem
+					t.join();// memory leaked of field, but should be no problem
 				}
 			}
 

@@ -21,7 +21,7 @@ import neoe.ime.U;
  * 
  * 
  */
-public class KanaLib implements ImeLib {
+public class JpCharLib implements ImeLib {
 	private static HashMap pyMap;
 
 	private static HashMap pyRevMap;
@@ -50,13 +50,13 @@ public class KanaLib implements ImeLib {
 
 	private Thread t1;
 
-	public KanaLib() {
+	public JpCharLib() {
 		if (pyMap == null) {
 			pyMap = new HashMap();
 			t1 = new Thread() {
 				public void run() {
 					try {
-						KanaLib.init();
+						JpCharLib.init();
 					} catch (Exception e) {
 						e.printStackTrace();
 					}

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import neoe.ime.ImeLib;
 import neoe.ime.jp.JpWordLib;
-import neoe.ime.jp.KanaLib;
+import neoe.ime.jp.JpCharLib;
 import neoe.ne.Ime.ImeInterface;
 
 public class Jp extends GeneralIme implements ImeInterface {
@@ -12,8 +12,8 @@ public class Jp extends GeneralIme implements ImeInterface {
 
 	void initLibs() throws Exception {
 		this.libs = new ArrayList();
-		ImeLib kanaLib = new KanaLib();
-		ImeLib jpWordLib = new JpWordLib((KanaLib) kanaLib);
+		ImeLib kanaLib = new JpCharLib();
+		ImeLib jpWordLib = new JpWordLib((JpCharLib) kanaLib);
 		this.libs.add(kanaLib);
 		this.libs.add(jpWordLib);
 	}

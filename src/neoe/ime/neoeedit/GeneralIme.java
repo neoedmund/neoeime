@@ -6,10 +6,12 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import neoe.ime.ImeLib;
 import neoe.ime.ImeUnit;
+import neoe.ime.NoDupList;
 import neoe.ne.Ime;
 import neoe.ne.Ime.ImeInterface;
 import neoe.ne.Ime.Out;
@@ -20,41 +22,53 @@ import neoe.ne.U;
  */
 public abstract class GeneralIme implements ImeInterface {
 	protected List<ImeLib> libs;
-	boolean inited = false;
+	boolean initStarted = false;
+	boolean initFinished = false;
 
 	public void init() {
-		if (this.inited) {
+		if (this.initStarted) {
 			return;
 		}
 		try {
-			this.inited = true;
+			this.initStarted = true;
 			initLibs();
-
-			System.out.println("IME init ok:" + getImeName());
+			System.out.println("IME init started:" + getImeName());
+			new Thread() {
+				public void run() {
+					for (ImeLib lib : libs) {
+						try {
+							lib.getInitThread().join();
+						} catch (InterruptedException e) {
+						}
+					}
+					initFinished = true;
+					System.out.println("IME init finished:" + getImeName());
+				}
+			}.start();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	public List find(String py) {
-		if (!this.inited) {
+		if (!this.initStarted) {
 			init();
 		}
 
-		List result = new ArrayList();
+		if (!this.initFinished)
+			return Collections.EMPTY_LIST;
 		int len = py.length();
 
-		result.clear();
+		NoDupList ndl = new NoDupList();
 		String sub;
 		for (int i = len; i > 0; i--) {
 			sub = py.substring(0, i);
-
 			for (Object o : this.libs) {
 				ImeLib lib = (ImeLib) o;
-				result.addAll(lib.find(sub));
+				ndl.addAll(lib.find(sub));
 			}
 		}
-		return result;
+		return ndl.data;
 	}
 
 	abstract void initLibs() throws Exception;
@@ -132,7 +146,7 @@ public abstract class GeneralIme implements ImeInterface {
 	StringBuffer sb = new StringBuffer();
 
 	public void setEnabled(boolean b) {
-		if (!this.inited) {
+		if (!this.initStarted) {
 			new Thread() {
 				public void run() {
 					GeneralIme.this.init();
@@ -237,7 +251,7 @@ public abstract class GeneralIme implements ImeInterface {
 			ImeUnit unit = (ImeUnit) this.res.get(index);
 			param.yield = unit.txt;
 			param.consumed = true;
-			this.sb.delete(0, unit.pylen);
+			this.sb.delete(0, Math.min(sb.length(), unit.pylen));
 			param.preedit = this.sb.toString();
 			if (this.sb.length() > 0) {
 				this.res = find(this.sb.toString());

@@ -9,20 +9,21 @@ import java.util.Map;
 import neoe.ime.FileUtil;
 import neoe.ime.ImeLib;
 import neoe.ime.ImeUnit;
+import neoe.ime.MultiValueMap;
 import neoe.ime.Res;
 import neoe.ime.U;
 
-public class WordPyLib implements ImeLib {
+public class CnWordLib implements ImeLib {
 
-	private static CharPyLib charLib;
+	private static CnCharLib charLib;
 
-	private static Map map;
+	private static MultiValueMap map;
 
 	private static String getPy(String w) {
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < w.length(); i++) {
 			String c = "" + w.charAt(i);
-			String py = CharPyLib.reverse(c);
+			String py = CnCharLib.reverse(c);
 			if (py == null) {
 				return null;
 			}
@@ -34,7 +35,7 @@ public class WordPyLib implements ImeLib {
 	private static void init() throws IOException {
 		System.out.print("load...");
 		long t1 = System.currentTimeMillis();
-		map = new HashMap();
+		map = new MultiValueMap();
 		String[] words = FileUtil.readString(U.getInstalledInputStream(Res.CN_DICT), null).split("\n");
 		// writeToWordFile(words);
 		// String fn="w2";
@@ -55,33 +56,27 @@ public class WordPyLib implements ImeLib {
 				py = getPy(w);
 			}
 			if (py != null) {
-				List list = (List) map.get(py);
-				if (list == null) {
-					list = new ArrayList();
-					map.put(py, list);
-				}
-				list.add(new ImeUnit(w, py.length()));
-				// out.write(w);
-				// out.write("\r\n");
+				map.add(py, new ImeUnit(w, py.length()));
 				wcc++;
 			} else {
 				System.out.println("drop " + w + " " + (wc++));
 			}
 		}
+		map.sortAfterAddsDone();
 		// out.close();
 		System.out.println("cn_word " + wcc + " words in " + (System.currentTimeMillis() - t1) + " ms");
 	}
 
 	private Thread t1;
 
-	public WordPyLib(CharPyLib charLib) throws IOException {
+	public CnWordLib(CnCharLib charLib) throws Exception {
 		if (map == null) {
-			map = new HashMap();
-			WordPyLib.charLib = charLib;
-			t1= new Thread() {
+			CnWordLib.charLib = charLib;
+			charLib.getInitThread().join();
+			t1 = new Thread() {
 				public void run() {
 					try {
-						WordPyLib.init();
+						CnWordLib.init();
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -92,11 +87,19 @@ public class WordPyLib implements ImeLib {
 	}
 
 	public List find(String py) {
-		List r = (List) map.get(py);
-		if (r == null) {
-			r = new ArrayList();
-		}
-		return r;
+		List exact = map.get(py);
+		List partial = findPartial(py);
+		if (exact.isEmpty())
+			return partial;
+		if (partial.isEmpty())
+			return exact;
+		List add = new ArrayList(exact);
+		add.addAll(partial);
+		return add;
+	}
+
+	private List findPartial(String py) {
+		return map.getPartialValues(py);
 	}
 
 	@Override
@@ -104,4 +107,12 @@ public class WordPyLib implements ImeLib {
 		return t1;
 	}
 
+	public static void main(String[] args) throws Exception {
+		CnWordLib lib = new CnWordLib(new CnCharLib());
+		lib.getInitThread().join();
+		System.out.println(lib.find("niux"));
+	}
 }
+
+// OK: add partial(eg, niuxi),
+// TODO add first letter word (eg, nxd)

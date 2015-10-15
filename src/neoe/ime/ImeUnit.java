@@ -16,4 +16,17 @@ public class ImeUnit {
 	public String toString() {
 		return txt + ":" + pylen;
 	}
+
+	@Override
+	public int hashCode() {
+		return txt.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof ImeUnit))
+			return false;
+		ImeUnit o = (ImeUnit) obj;
+		return txt.equals(o.txt);
+	}
 }

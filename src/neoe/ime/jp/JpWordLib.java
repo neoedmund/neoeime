@@ -13,7 +13,7 @@ import neoe.ime.Res;
 import neoe.ime.U;
 
 public class JpWordLib implements ImeLib {
-	private static KanaLib charLib;
+	private static JpCharLib charLib;
 
 	private static Map map;
 
@@ -78,17 +78,18 @@ public class JpWordLib implements ImeLib {
 
 	}
 
-	public static void main(String[] args) throws IOException {
-		JpWordLib lib = new JpWordLib(new KanaLib());
+	public static void main(String[] args) throws Exception {
+		JpWordLib lib = new JpWordLib(new JpCharLib());
 
 	}
 
 	private Thread t1;
 
-	public JpWordLib(KanaLib charLib) throws IOException {
+	public JpWordLib(JpCharLib charLib) throws Exception {
 		if (map == null) {
 			map = new HashMap();
 			JpWordLib.charLib = charLib;
+			charLib.getInitThread().join();
 			t1 = new Thread() {
 				public void run() {
 					try {
