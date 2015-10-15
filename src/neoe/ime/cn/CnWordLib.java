@@ -67,7 +67,6 @@ public class CnWordLib implements ImeLib {
 				// set spell
 				py = w.substring(p1 + 1).trim();
 				w = w.substring(0, p1);
-				System.out.println("add  "+w+" "+py);
 			} else {
 				// auto spell
 				py = getPy(w);
@@ -75,7 +74,6 @@ public class CnWordLib implements ImeLib {
 			}
 			if (pyHead != null) {
 				map.add(pyHead, new ImeUnit(w, pyHead.length()));
-				wcc++;
 			}
 			if (py != null) {
 				map.add(py, new ImeUnit(w, py.length()));
