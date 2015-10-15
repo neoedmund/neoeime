@@ -54,7 +54,7 @@ public class CnCharLib implements ImeLib {
 	}
 
 	/** char 2 py */
-	public static String reverse(String c) {
+	public static String reverse(char c) {
 		int p = pydata.indexOf(c);
 		if (p < 0) {
 			return null;

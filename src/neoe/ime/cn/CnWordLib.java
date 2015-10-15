@@ -22,12 +22,27 @@ public class CnWordLib implements ImeLib {
 	private static String getPy(String w) {
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < w.length(); i++) {
-			String c = "" + w.charAt(i);
+			char c = w.charAt(i);
 			String py = CnCharLib.reverse(c);
 			if (py == null) {
 				return null;
 			}
 			sb.append(py);
+		}
+		return sb.toString();
+	}
+
+	private static String getPyHead(String w) {
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < w.length(); i++) {
+			char c = w.charAt(i);
+			String py = CnCharLib.reverse(c);
+			if (py == null) {
+				return null;
+			}
+			if (!py.isEmpty()) {
+				sb.append(py.charAt(0));
+			}
 		}
 		return sb.toString();
 	}
@@ -47,13 +62,20 @@ public class CnWordLib implements ImeLib {
 			w = w.trim();
 			int p1 = w.indexOf(" ");
 			String py;
+			String pyHead = null;
 			if (p1 > 0) {
 				// set spell
-				py = w.substring(p1 + 1);
+				py = w.substring(p1 + 1).trim();
 				w = w.substring(0, p1);
+				System.out.println("add  "+w+" "+py);
 			} else {
 				// auto spell
 				py = getPy(w);
+				pyHead = getPyHead(w);
+			}
+			if (pyHead != null) {
+				map.add(pyHead, new ImeUnit(w, pyHead.length()));
+				wcc++;
 			}
 			if (py != null) {
 				map.add(py, new ImeUnit(w, py.length()));
@@ -110,9 +132,9 @@ public class CnWordLib implements ImeLib {
 	public static void main(String[] args) throws Exception {
 		CnWordLib lib = new CnWordLib(new CnCharLib());
 		lib.getInitThread().join();
-		System.out.println(lib.find("niux"));
+		System.out.println(lib.find("jihao"));
 	}
 }
 
 // OK: add partial(eg, niuxi),
-// TODO add first letter word (eg, nxd)
+// OK: add first letter word (eg, nxd)
