@@ -1,10 +1,10 @@
 {
-baseDir:".",
+baseDir:"."
 prjs:[
- [neoeime,.,{cp:["/oss/neoeedit/dist/neoeedit.jar"]}]
-],
-destDir:".",
-debug:true,
-target:7,
+ [neoeime . {cp:["neoeedit.jar"]}]
+]
+destDir:"."
+target:7
+source:7
 }
-                                                             
+
