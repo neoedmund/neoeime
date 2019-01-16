@@ -12,9 +12,9 @@ import java.util.Set;
  */
 public class MultiValueMap<K extends String, V> {
 
-	private HashMap<K, List<V>> data;
-	private HashMap<K, Set<V>> ex;
-	private List<K> sortedKey;
+	public HashMap<K, List<V>> data;
+	public HashMap<K, Set<V>> ex;
+	public List<K> sortedKey;
 
 	public void sortAfterAddsDone() {
 		sortedKey = new ArrayList<K>(data.keySet());
