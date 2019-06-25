@@ -1,9 +1,8 @@
 {
 baseDir:"."
 prjs:[
- [neoeime . {cp:["neoeedit.jar"]}]
+ [neoeime . {cp:["/home/neoe/.neoepkg/neoeedit/dist/neoeedit.jar"]}]
 ]
-destDir:"."
 target:7
 source:7
 }
