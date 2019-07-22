@@ -1,4 +1,4 @@
-package neoe.ne;
+package neoe.ne.plugin;
 
 import static neoe.ne.U.Config.getConfig;
 
@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import neoe.ne.Ime;
 import neoe.ne.Ime.ImeInterface;
 
 public class PluginInit {
