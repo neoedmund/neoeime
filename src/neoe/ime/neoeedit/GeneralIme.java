@@ -5,7 +5,6 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,7 +31,7 @@ public abstract class GeneralIme implements ImeInterface {
 		try {
 			this.initStarted = true;
 			initLibs();
-			System.out.println("IME init started:" + getImeName());
+			System.out.println("IME init started: " + getImeName());
 			new Thread() {
 				public void run() {
 					for (ImeLib lib : libs) {
@@ -42,7 +41,7 @@ public abstract class GeneralIme implements ImeInterface {
 						}
 					}
 					initFinished = true;
-					System.out.println("IME init finished:" + getImeName());
+					System.out.println("IME init finished: " + getImeName());
 				}
 			}.start();
 		} catch (Exception e) {
@@ -57,8 +56,11 @@ public abstract class GeneralIme implements ImeInterface {
 
 		if (!this.initFinished)
 			return Collections.EMPTY_LIST;
+
 		int len = py.length();
 
+		if (len == 0)
+			return Collections.EMPTY_LIST;
 		NoDupList ndl = new NoDupList();
 		String sub;
 		for (int i = len; i > 0; i--) {
@@ -78,17 +80,17 @@ public abstract class GeneralIme implements ImeInterface {
 			return;
 		}
 		int kc = env.getKeyCode();
-		if ((this.sb.length() > 0) && (kc == 27)) {
+		if ((this.sb.length() > 0) && (kc == KeyEvent.VK_ESCAPE)) {
 			this.sb.setLength(0);
 			param.consumed = true;
 			return;
 		}
-		if ((this.sb.length() > 0) && (this.res.size() > 0) && (kc == 33)) {
+		if ((this.sb.length() > 0) && (this.res.size() > 0) && (kc == KeyEvent.VK_PAGE_UP)) {
 			if (this.start >= 9) {
 				this.start -= 9;
 			}
 			param.consumed = true;
-		} else if ((this.sb.length() > 0) && (this.res.size() > 0) && (kc == 34)) {
+		} else if ((this.sb.length() > 0) && (this.res.size() > 0) && (kc == KeyEvent.VK_PAGE_DOWN)) {
 			if (this.start + 9 < this.res.size()) {
 				this.start += 9;
 			}
@@ -101,7 +103,7 @@ public abstract class GeneralIme implements ImeInterface {
 			return;
 		}
 		char c = env.getKeyChar();
-
+//		System.out.println("res.size=" + res.size());
 		if (c == '\b') {
 			int len = this.sb.length();
 			if (len > 0) {
@@ -112,7 +114,7 @@ public abstract class GeneralIme implements ImeInterface {
 			this.sb.append(Character.toLowerCase(c));
 			consumePreedit(param);
 		} else if (Character.isDigit(c)) {
-			if ((this.sb.length() == 0) || (this.res == null) || (this.res.isEmpty())) {
+			if ((this.sb.length() == 0) || (this.res.isEmpty())) {
 				return;
 			}
 			int index = c - '0' + this.start;
@@ -120,13 +122,13 @@ public abstract class GeneralIme implements ImeInterface {
 				consumeYield(index - 1, param);
 			}
 		} else if ((c == ' ') || (c == '\n')) {
-			if ((this.sb.length() > 0) && ((this.res == null) || (this.res.isEmpty()))) {
+			if ((this.sb.length() > 0) && ((this.res.isEmpty()))) {
 				param.yield = this.sb.toString();
 				param.consumed = true;
 				this.sb.setLength(0);
 				return;
 			}
-			if ((this.sb.length() == 0) || (this.res == null) || (this.res.isEmpty())) {
+			if ((this.sb.length() == 0) || (this.res.isEmpty())) {
 				return;
 			}
 			consumeYield(this.start, param);
@@ -159,7 +161,7 @@ public abstract class GeneralIme implements ImeInterface {
 	public abstract String getImeName();
 
 	public void paint(Graphics2D g1, Font[] fonts, int cursorX, int cursorY, Rectangle clipBounds) {
-		if ((this.res == null) || (this.res.isEmpty()) || (this.sb.length() == 0)) {
+		if ((this.res.isEmpty()) || (this.sb.length() == 0)) {
 			return;
 		}
 		Graphics2D g2 = (Graphics2D) g1.create();
@@ -231,7 +233,7 @@ public abstract class GeneralIme implements ImeInterface {
 	Color c0 = Color.decode("0xaaaaff");
 	Color c1 = Color.decode("0x005500");
 	Color c2 = Color.decode("0x222222");
-	List res;
+	List res = Collections.EMPTY_LIST;
 	int start = 0;
 
 	private void consumePreedit(Ime.Out param) {
@@ -255,12 +257,15 @@ public abstract class GeneralIme implements ImeInterface {
 			param.preedit = this.sb.toString();
 			if (this.sb.length() > 0) {
 				this.res = find(this.sb.toString());
-				this.start = 0;
+			} else {
+				this.res = Collections.EMPTY_LIST;
 			}
+			this.start = 0;
 		} else {
 			param.yield = this.sb.toString();
 			param.consumed = true;
 			this.sb.setLength(0);
+			this.res = Collections.EMPTY_LIST;
 		}
 	}
 }
