@@ -23,8 +23,9 @@ public class MultiValueMap<K extends String, V> {
 
 	public List<V> getPartialValues(K key) {
 		if (sortedKey == null) {
-			throw new RuntimeException(
-					"please call sortAfterAddsDone() before me, and don't do it automatically because just need sort once.");
+			return Collections.EMPTY_LIST;
+//			throw new RuntimeException(
+//					"please call sortAfterAddsDone() before me, and don't do it automatically because just need sort once.");
 		}
 		List<K> pk = getPartialMatchedKeys(key);
 		NoDupList ret = new NoDupList();

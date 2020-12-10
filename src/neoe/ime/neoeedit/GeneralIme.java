@@ -20,7 +20,17 @@ import neoe.ne.U;
  * work for neoeedit IME plugin format
  */
 public abstract class GeneralIme implements ImeInterface {
+
+	protected static ImeLib jpWord;
+	protected static ImeLib enWord;
+	protected static ImeLib cnenDict;
+	protected static ImeLib jpChar;
+	protected static ImeLib cnChar;
+	protected static ImeLib cnWord;
+	protected static Object initLock = new Object();
+
 	protected List<ImeLib> libs;
+
 	boolean initStarted = false;
 	boolean initFinished = false;
 
@@ -28,25 +38,13 @@ public abstract class GeneralIme implements ImeInterface {
 		if (this.initStarted) {
 			return;
 		}
+		this.initStarted = true;
 		try {
-			this.initStarted = true;
 			initLibs();
-			System.out.println("IME init started: " + getImeName());
-			new Thread() {
-				public void run() {
-					for (ImeLib lib : libs) {
-						try {
-							lib.getInitThread().join();
-						} catch (InterruptedException e) {
-						}
-					}
-					initFinished = true;
-					System.out.println("IME init finished: " + getImeName());
-				}
-			}.start();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		initFinished = true;
 	}
 
 	public List find(String py) {
@@ -64,7 +62,7 @@ public abstract class GeneralIme implements ImeInterface {
 		NoDupList ndl = new NoDupList();
 		String sub;
 		for (int i = len; i > 0; i--) {
-			sub = py.substring(0, i);
+			sub = py.substring(0, i).toLowerCase();
 			for (Object o : this.libs) {
 				ImeLib lib = (ImeLib) o;
 				ndl.addAll(lib.find(sub));
@@ -85,18 +83,23 @@ public abstract class GeneralIme implements ImeInterface {
 			param.consumed = true;
 			return;
 		}
+		int ps = longTextMode() ? pagesize2 : pagesize1;
 		if ((this.sb.length() > 0) && (this.res.size() > 0) && (kc == KeyEvent.VK_PAGE_UP)) {
-			if (this.start >= 9) {
-				this.start -= 9;
+			if (this.start >= ps) {
+				this.start -= ps;
 			}
 			param.consumed = true;
 		} else if ((this.sb.length() > 0) && (this.res.size() > 0) && (kc == KeyEvent.VK_PAGE_DOWN)) {
-			if (this.start + 9 < this.res.size()) {
-				this.start += 9;
+			if (this.start + ps < this.res.size()) {
+				this.start += ps;
 			}
 			param.consumed = true;
 		}
 	}
+
+	int pagesize1 = 9;
+	int pagesize2 = 5;
+	protected boolean toLowCase = false;
 
 	public void keyTyped(KeyEvent env, Ime.Out param) {
 		if ((env.isAltDown()) || (env.isControlDown())) {
@@ -104,6 +107,8 @@ public abstract class GeneralIme implements ImeInterface {
 		}
 		char c = env.getKeyChar();
 //		System.out.println("res.size=" + res.size());
+		int ps = longTextMode() ? pagesize2 : pagesize1;
+
 		if (c == '\b') {
 			int len = this.sb.length();
 			if (len > 0) {
@@ -111,7 +116,7 @@ public abstract class GeneralIme implements ImeInterface {
 				consumePreedit(param);
 			}
 		} else if (Character.isLetter(c)) {
-			this.sb.append(Character.toLowerCase(c));
+			this.sb.append(c);
 			consumePreedit(param);
 		} else if (Character.isDigit(c)) {
 			if ((this.sb.length() == 0) || (this.res.isEmpty())) {
@@ -121,7 +126,7 @@ public abstract class GeneralIme implements ImeInterface {
 			if ((index > 0) && (index <= this.res.size())) {
 				consumeYield(index - 1, param);
 			}
-		} else if ((c == ' ') || (c == '\n')) {
+		} else if ((c == ' ')) {
 			if ((this.sb.length() > 0) && ((this.res.isEmpty()))) {
 				param.yield = this.sb.toString();
 				param.consumed = true;
@@ -132,14 +137,23 @@ public abstract class GeneralIme implements ImeInterface {
 				return;
 			}
 			consumeYield(this.start, param);
+		} else if (c == '\n') {
+			if ((this.sb.length() == 0)) {
+				return;
+			}
+			param.yield = this.sb.toString();
+			param.consumed = true;
+			param.preedit = "";
+			this.sb.setLength(0);
+			res.clear();
 		} else if ((c == '-') && (this.res.size() > 0)) {
-			if (this.start >= 9) {
-				this.start -= 9;
+			if (this.start >= ps) {
+				this.start -= ps;
 			}
 			param.consumed = true;
 		} else if ((c == '=') && (this.res.size() > 0)) {
-			if (this.start + 9 < this.res.size()) {
-				this.start += 9;
+			if (this.start + ps < this.res.size()) {
+				this.start += ps;
 			}
 			param.consumed = true;
 		}
@@ -164,10 +178,14 @@ public abstract class GeneralIme implements ImeInterface {
 		if ((this.res.isEmpty()) || (this.sb.length() == 0)) {
 			return;
 		}
+		if (longTextMode()) {
+			paint2(g1, fonts, cursorX, cursorY, clipBounds);
+			return;
+		}
 		Graphics2D g2 = (Graphics2D) g1.create();
 		g2.setPaintMode();
 		int len = this.res.size();
-		int end = this.start + 8;
+		int end = this.start + pagesize1 - 1;
 		if (end >= len) {
 			end = len - 1;
 		}
@@ -206,6 +224,10 @@ public abstract class GeneralIme implements ImeInterface {
 		if (cursorY + height - clipBounds.y > clipBounds.height) {
 			box.y = (clipBounds.height + clipBounds.y - height);
 		}
+		if (box.x < 0)
+			box.x = 0;
+		if (box.y < 0)
+			box.y = 0;
 		g2.setColor(this.c0);
 		g2.fill(box);
 		g2.setColor(this.c1);
@@ -230,13 +252,81 @@ public abstract class GeneralIme implements ImeInterface {
 		g2.dispose();
 	}
 
+	/** one item per line, usually long */
+	public void paint2(Graphics2D g1, Font[] fonts, int cursorX, int cursorY, Rectangle clipBounds) {
+		if ((this.res.isEmpty()) || (this.sb.length() == 0)) {
+			return;
+		}
+		Graphics2D g2 = (Graphics2D) g1.create();
+		g2.setPaintMode();
+		int len = this.res.size();
+		int end = this.start + pagesize2 - 1;
+		if (end >= len) {
+			end = len - 1;
+		}
+		if (this.start > end) {
+			this.start = end;
+		}
+		int index = 1;
+		int maxWidth = 0;
+		int curWidth = 0;
+		for (int i = this.start; i <= end; i++) {
+			ImeUnit unit = (ImeUnit) this.res.get(i);
+			int w = U.stringWidth(g2, fonts, index + ":" + unit.txt.replace('\t', ' '));
+			index++;
+			curWidth += w;
+			if (curWidth > maxWidth) {
+				maxWidth = curWidth;
+			}
+			curWidth = 0;
+		}
+//		final int realMaxW = 500;
+//		maxWidth = Math.min(realMaxW, maxWidth);
+
+		int lineCnt = (end - this.start) + 1;
+		maxWidth += 5;
+		int lineHeight = fonts[0].getSize();
+		int height = lineHeight * (lineCnt + 1) + 5;
+		Rectangle box = new Rectangle(cursorX, cursorY, maxWidth, height);
+		if (cursorX + maxWidth - clipBounds.x > clipBounds.width) {
+			box.x = (clipBounds.width + clipBounds.x - maxWidth);
+		}
+
+		if (cursorY + height - clipBounds.y > clipBounds.height) {
+			box.y = (clipBounds.height + clipBounds.y - height);
+		}
+		if (box.x < 0)
+			box.x = 0;
+		if (box.y < 0)
+			box.y = 0;
+		g2.setColor(this.c0);
+		g2.fill(box);
+		g2.setColor(this.c1);
+		int x = box.x + 2;
+		int y = box.y + 2 + lineHeight;
+		U.drawString(g2, fonts, this.sb.toString(), x, y);
+		index = 1;
+		for (int i = this.start; i <= end; i++) {
+			y += lineHeight;
+			x = box.x + 2;
+			ImeUnit unit = (ImeUnit) this.res.get(i);
+			g2.setColor(this.c1);
+			int w = U.drawString(g2, fonts, index + ":", x, y);
+			x += w;
+			g2.setColor(this.c2);
+			x += U.drawString(g2, fonts, unit.txt.replace('\t', ' '), x, y);
+			index++;
+		}
+		g2.dispose();
+	}
+
 	Color c0 = Color.decode("0xaaaaff");
 	Color c1 = Color.decode("0x005500");
 	Color c2 = Color.decode("0x222222");
-	List res = Collections.EMPTY_LIST;
+	protected List res = Collections.EMPTY_LIST;
 	int start = 0;
 
-	private void consumePreedit(Ime.Out param) {
+	protected void consumePreedit(Ime.Out param) {
 		param.consumed = true;
 		this.res = find(this.sb.toString());
 		this.start = 0;
@@ -248,7 +338,7 @@ public abstract class GeneralIme implements ImeInterface {
 		}
 	}
 
-	private void consumeYield(int index, Ime.Out param) {
+	protected void consumeYield(int index, Ime.Out param) {
 		if (!this.res.isEmpty()) {
 			ImeUnit unit = (ImeUnit) this.res.get(index);
 			param.yield = unit.txt;

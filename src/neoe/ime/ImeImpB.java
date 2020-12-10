@@ -5,6 +5,8 @@ import java.util.List;
 
 import neoe.ime.cn.CnCharLib;
 import neoe.ime.cn.CnWordLib;
+import neoe.ime.cnen.CnEnDict;
+import neoe.ime.en.EnWord;
 import neoe.ime.jp.JpWordLib;
 import neoe.ime.jp.JpCharLib;
 import neoe.ime.spi.NeoeInputMethod;
@@ -14,14 +16,17 @@ public class ImeImpB implements Ime {
 	private static boolean initFinished = false, initStarted = false;
 
 	private static ImeLib jpWord;
-
+	private static ImeLib enWord;
+	private static ImeLib cnenDict;
 	private static ImeLib jpChar;
-
 	private static ImeLib cnChar;
-
 	private static ImeLib cnWord;
+
 	private static final int CN = 1;
 	private static final int JP = 2;
+	private static final int EN = 3;
+	private static final int CNEN = 4;
+
 	private static final int MAX_OUT_LEN = 30;
 
 	private static final int MAX_SELECTION = 10;
@@ -35,7 +40,7 @@ public class ImeImpB implements Ime {
 			Thread.sleep(1000);
 		}
 
-		b.find("nihaoniuxiaodong");
+		b.find("nihao");
 		while (true) {
 			System.out.println(b.out());
 			// b.next();
@@ -88,9 +93,13 @@ public class ImeImpB implements Ime {
 			} else if (imeType == JP) {// jp selected
 				ndl.addAll(jpChar.find(sub));
 				ndl.addAll(jpWord.find(sub));
+			} else if (imeType == EN) {// jp selected
+				ndl.addAll(enWord.find(sub));
+			} else if (imeType == CNEN) {// jp selected
+				ndl.addAll(cnenDict.find(sub));
 			}
 		}
-		result=ndl.data;
+		result = ndl.data;
 		// System.out.println("count=" + result.size());
 		start = 0;
 	}
@@ -122,16 +131,17 @@ public class ImeImpB implements Ime {
 			cnWord = new CnWordLib((CnCharLib) cnChar);
 			jpChar = new JpCharLib();
 			jpWord = new JpWordLib((JpCharLib) jpChar);
+			cnenDict = new CnEnDict((CnCharLib) cnChar);
+			enWord = new EnWord((CnEnDict) cnenDict);
 
-			ImeLib[] libs = new ImeLib[] { cnChar, cnWord, jpChar, jpWord };
+			ImeLib[] libs = new ImeLib[] { cnChar, cnWord, jpChar, jpWord, enWord, cnenDict };
 			for (ImeLib lib : libs) {
 				Thread t = lib.getInitThread();
 				if (t != null) {
 					t.join();// memory leaked of field, but should be no problem
 				}
 			}
-
-			System.out.println("imeB init ok");
+			System.out.println("ime(s) init ok");
 			initFinished = true;
 		} catch (Exception e) {
 			e.printStackTrace();

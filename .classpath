@@ -7,5 +7,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/neoeedit"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/neoeutils"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
