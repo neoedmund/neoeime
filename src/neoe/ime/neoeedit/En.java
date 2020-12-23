@@ -35,7 +35,7 @@ public class En extends GeneralIme implements ImeInterface {
 	}
 
 	public String getImeName() {
-		return "English";
+		return "Eng";
 	}
 
 	@Override

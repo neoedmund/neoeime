@@ -13,7 +13,7 @@ import neoe.ne.Ime;
 import neoe.ne.Ime.ImeInterface;
 
 public class CnEn extends GeneralIme implements ImeInterface {
-	public static final String NAME = "汉英辞典";
+	public static final String NAME = "PinyinEnglish";
 
 	void initLibs() throws Exception {
 		synchronized (initLock) {
@@ -30,7 +30,7 @@ public class CnEn extends GeneralIme implements ImeInterface {
 	}
 
 	public String getImeName() {
-		return "汉英";
+		return "PyEng";
 	}
 
 	protected void consumeYield(int index, Ime.Out param) {
