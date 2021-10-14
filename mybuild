@@ -1,10 +1,10 @@
 {
-baseDir:"."
-prjs:[
- [neoeime . {cp:["/home/neoe/.neoepkg/neoeedit/dist/neoeedit.jar"]}]
-]
-target:8
-source:8
-release:8
+	baseDir : .
+	prjs : [
+		[ neoeime . { cp : [ /home/neoe/.neoepkg/neoeedit/dist/neoeedit.jar ] } ]
+	]
+	target : 8
+	source : 8
+	release : 8
 }
 
