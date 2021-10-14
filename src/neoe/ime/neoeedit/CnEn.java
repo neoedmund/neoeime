@@ -30,7 +30,7 @@ public class CnEn extends GeneralIme implements ImeInterface {
 	}
 
 	public String getImeName() {
-		return "PyEng";
+		return "拼en";
 	}
 
 	protected void consumeYield(int index, Ime.Out param) {

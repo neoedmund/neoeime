@@ -92,7 +92,7 @@ public class WordSort {
 		Integer i = (Integer) vote.get(s);
 		int v = i == null ? 0 : i.intValue();
 		v++;
-		vote.put(s, new Integer(v));
+		vote.put(s, v);
 	}
 
 	/**
