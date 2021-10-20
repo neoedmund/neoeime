@@ -115,9 +115,6 @@ public abstract class GeneralIme implements ImeInterface {
 				this.sb.setLength(len - 1);
 				consumePreedit(param);
 			}
-		} else if (Character.isLetter(c)) {
-			this.sb.append(c);
-			consumePreedit(param);
 		} else if (Character.isDigit(c)) {
 			if ((this.sb.length() == 0) || (this.res.isEmpty())) {
 				return;
@@ -146,16 +143,19 @@ public abstract class GeneralIme implements ImeInterface {
 			param.preedit = "";
 			this.sb.setLength(0);
 			res.clear();
-		} else if ((c == '-') && (this.res.size() > 0)) {
+		} else if ((c == '[') && (this.res.size() > 0)) {
 			if (this.start >= ps) {
 				this.start -= ps;
 			}
 			param.consumed = true;
-		} else if ((c == '=') && (this.res.size() > 0)) {
+		} else if ((c == ']') && (this.res.size() > 0)) {
 			if (this.start + ps < this.res.size()) {
 				this.start += ps;
 			}
 			param.consumed = true;
+		} else /* if (Character.isLetter(c)) */ {
+			this.sb.append(c);
+			consumePreedit(param);
 		}
 	}
 
