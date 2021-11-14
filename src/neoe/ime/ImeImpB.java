@@ -33,29 +33,19 @@ public class ImeImpB implements Ime {
 
 	public static void main(String[] args) throws Exception {
 		ImeImpB b = new ImeImpB(null);
-		b.imeType = CN;
+		b.imeType = JP;
 		while (true) {
 			if (b.initFinished)
 				break;
 			Thread.sleep(1000);
 		}
 
-		b.find("nihao");
+		b.find(",");
 		while (true) {
 			System.out.println(b.out());
 			// b.next();
 			System.out.println("s=" + b.select(0));
 			System.out.println("r=" + b.cur);
-			if (b.getCount() == 0)
-				break;
-		}
-		b.find("niux");
-		while (true) {
-			System.out.println(b.out());
-			// b.next();
-			System.out.println("s=" + b.select(0));
-			System.out.println("r=" + b.cur);
-
 			if (b.getCount() == 0)
 				break;
 		}

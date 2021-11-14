@@ -42,7 +42,10 @@ public class CnCharLib implements ImeLib {
 			if (p0 >= str.length())
 				break;
 		}
-
+		m.add(",", new ImeUnit("，", 1));
+		m.add(".", new ImeUnit("。", 1));
+		m.add("?", new ImeUnit("？", 1));
+		m.add("!", new ImeUnit("！", 1));
 	}
 
 	private static void addInfo(String s, int p0, int p1, int p2) {
