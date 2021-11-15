@@ -4,18 +4,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import neoe.ime.FileUtil;
 import neoe.ime.ImeLib;
 import neoe.ime.ImeUnit;
+import neoe.ime.MultiValueMap;
 import neoe.ime.Res;
 import neoe.ime.U;
 
 public class JpWordLib implements ImeLib {
 	private static JpCharLib charLib;
 
-	private static Map map;
+	private static MultiValueMap map;
 
 	/**
 	 * @param kana
@@ -29,13 +29,17 @@ public class JpWordLib implements ImeLib {
 		char lastc = kana.charAt(kana.length() - 1);
 		if (lastc >= 'a' && lastc <= 'z') {
 			len--;
-			U.putMultiValueMap(map, py, new ImeUnit(w, len));
+			putMultiValueMap(map, py, new ImeUnit(w, len));
 		} else {
-			U.putMultiValueMap(map, py, new ImeUnit(w, len));
+			putMultiValueMap(map, py, new ImeUnit(w, len));
 			if (!kana.equals(w)) {
-				U.putMultiValueMap(map, py, new ImeUnit(kana, len));
+				putMultiValueMap(map, py, new ImeUnit(kana, len));
 			}
 		}
+	}
+
+	private static void putMultiValueMap(MultiValueMap m, String py, ImeUnit imeUnit) {
+		m.add(py, imeUnit);
 	}
 
 	/**
@@ -45,7 +49,7 @@ public class JpWordLib implements ImeLib {
 	protected static void init() throws IOException {
 		System.out.print("load jp...");
 		long t1 = System.currentTimeMillis();
-		map = new HashMap();
+		map = new MultiValueMap();
 		String[] words = FileUtil.readString(U.getInstalledInputStream(Res.JP_DICT), null).split("\n");
 		int wc = 0;
 		int wcc = 0;
@@ -74,6 +78,7 @@ public class JpWordLib implements ImeLib {
 			}
 		}
 		// out.close();
+		map.sortAfterAddsDone();
 		System.out.println("jp_word " + wcc + " words in " + (System.currentTimeMillis() - t1) + " ms");
 
 	}
@@ -87,7 +92,7 @@ public class JpWordLib implements ImeLib {
 
 	public JpWordLib(JpCharLib charLib) throws Exception {
 		if (map == null) {
-			map = new HashMap();
+			map = new MultiValueMap();
 			JpWordLib.charLib = charLib;
 			charLib.getInitThread().join();
 			t1 = new Thread() {
@@ -107,11 +112,20 @@ public class JpWordLib implements ImeLib {
 	}
 
 	public List find(String py) {
-		List r = (List) map.get(py);
-		if (r == null) {
-			r = new ArrayList();
-		}
-		return r;
+		List exact = map.get(py);
+		List partial = map.getPartialValues(py);
+		if (exact.isEmpty())
+			return partial;
+		if (partial.isEmpty())
+			return exact;
+		List add = new ArrayList(exact);
+		add.addAll(partial);
+		return add;
+//		List r = (List) map.get(py);
+//		if (r == null) {
+//			r = new ArrayList();
+//		}
+//		return r;
 	}
 
 	@Override
