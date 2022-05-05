@@ -11,6 +11,7 @@ import java.util.List;
 import neoe.ime.ImeLib;
 import neoe.ime.ImeUnit;
 import neoe.ime.NoDupList;
+import neoe.ne.FontList;
 import neoe.ne.Ime;
 import neoe.ne.Ime.ImeInterface;
 import neoe.ne.Ime.Out;
@@ -174,7 +175,7 @@ public abstract class GeneralIme implements ImeInterface {
 
 	public abstract String getImeName();
 
-	public void paint(Graphics2D g1, Font[] fonts, int cursorX, int cursorY, Rectangle clipBounds) {
+	public void paint(Graphics2D g1, FontList fonts, int cursorX, int cursorY, Rectangle clipBounds) {
 		if ((this.res.isEmpty()) || (this.sb.length() == 0)) {
 			return;
 		}
@@ -215,7 +216,7 @@ public abstract class GeneralIme implements ImeInterface {
 		maxWidth += U.charWidth(g2, fonts, ' ') * 2;
 		maxWidth = Math.max(maxWidth, U.stringWidth(g2, fonts, this.sb.toString()));
 		maxWidth += 5;
-		int lineHeight = fonts[0].getSize();
+		int lineHeight = fonts.getlineHeight();
 		int height = lineHeight * (lineCnt + 1) + 5;
 		Rectangle box = new Rectangle(cursorX, cursorY, maxWidth, height);
 		if (cursorX + maxWidth - clipBounds.x > clipBounds.width) {
@@ -253,7 +254,7 @@ public abstract class GeneralIme implements ImeInterface {
 	}
 
 	/** one item per line, usually long */
-	public void paint2(Graphics2D g1, Font[] fonts, int cursorX, int cursorY, Rectangle clipBounds) {
+	public void paint2(Graphics2D g1, FontList fonts, int cursorX, int cursorY, Rectangle clipBounds) {
 		if ((this.res.isEmpty()) || (this.sb.length() == 0)) {
 			return;
 		}
@@ -285,7 +286,7 @@ public abstract class GeneralIme implements ImeInterface {
 
 		int lineCnt = (end - this.start) + 1;
 		maxWidth += 5;
-		int lineHeight = fonts[0].getSize();
+		int lineHeight = fonts.getlineHeight();
 		int height = lineHeight * (lineCnt + 1) + 5;
 		Rectangle box = new Rectangle(cursorX, cursorY, maxWidth, height);
 		if (cursorX + maxWidth - clipBounds.x > clipBounds.width) {
