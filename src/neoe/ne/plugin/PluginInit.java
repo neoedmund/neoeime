@@ -1,22 +1,21 @@
 package neoe.ne.plugin;
 
-import static neoe.ne.U.Config.getConfig;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import neoe.ne.Conf;
 
 import neoe.ne.Ime;
 import neoe.ne.Ime.ImeInterface;
 
 public class PluginInit {
+
 	public static void run() throws IOException {
-		Map config = getConfig();
+		Map config = Conf.getConfig();
 		List list = (List) config.get("ime");
-		if (list == null || list.size() == 0) {
+		if (list == null || list.size() == 0)
 			return;
-		}
 		List<ImeInterface> imes = new ArrayList();
 		for (Object o : list) {
 			String cls = (String) o;

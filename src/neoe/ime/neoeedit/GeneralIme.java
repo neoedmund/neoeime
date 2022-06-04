@@ -154,11 +154,19 @@ public abstract class GeneralIme implements ImeInterface {
 				this.start += ps;
 			}
 			param.consumed = true;
-		} else /* if (Character.isLetter(c)) */ {
+		}else if(isIgnoreKey(c)) {
+		return;
+		}else /* if (Character.isLetter(c)) */ {
 			this.sb.append(c);
 			consumePreedit(param);
 		}
 	}
+
+	  boolean isIgnoreKey(char c) {
+		  if (Character.isAlphabetic(c))return false;
+		  if (",.\\-".indexOf(c)>=0)return false;
+		  return true;
+	  };
 
 	StringBuffer sb = new StringBuffer();
 
