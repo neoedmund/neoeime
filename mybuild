@@ -1,7 +1,7 @@
 {
 	baseDir : .
 	prjs : [
-		[ neoeime . { cp : [ neoeedit.jar ] } ]
+		[ neoeime . { dep : [ neoeedit ] } ]
 	]
 }
 

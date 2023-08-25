@@ -74,11 +74,11 @@ public abstract class GeneralIme implements ImeInterface {
 
 	abstract void initLibs() throws Exception;
 
-	public void keyPressed(KeyEvent env, Out param) {
-		if ((env.isAltDown()) || (env.isControlDown())) {
-			return;
-		}
-		int kc = env.getKeyCode();
+	public void keyPressed(int keycode, Out param) {
+//		if ((env.isAltDown()) || (env.isControlDown())) {
+//			return;
+//		}
+		int kc = keycode;//env.getKeyCode();
 		if ((this.sb.length() > 0) && (kc == KeyEvent.VK_ESCAPE)) {
 			this.sb.setLength(0);
 			param.consumed = true;
@@ -102,11 +102,11 @@ public abstract class GeneralIme implements ImeInterface {
 	int pagesize2 = 5;
 	protected boolean toLowCase = false;
 
-	public void keyTyped(KeyEvent env, Ime.Out param) {
-		if ((env.isAltDown()) || (env.isControlDown())) {
-			return;
-		}
-		char c = env.getKeyChar();
+	public void keyTyped(char keyChar, Ime.Out param) {
+//		if ((env.isAltDown()) || (env.isControlDown())) {
+//			return;
+//		}
+		char c = keyChar;//env.getKeyChar();
 //		System.out.println("res.size=" + res.size());
 		int ps = longTextMode() ? pagesize2 : pagesize1;
 
