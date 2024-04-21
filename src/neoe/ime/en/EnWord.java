@@ -30,7 +30,7 @@ public class EnWord implements ImeLib {
 		initThread.start();
 	}
 
-	static List words;
+	public static List words;
 
 	private void doInit() {
 		if (words != null)

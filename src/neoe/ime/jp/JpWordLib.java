@@ -15,7 +15,7 @@ import neoe.ime.U;
 public class JpWordLib implements ImeLib {
 	private static JpCharLib charLib;
 
-	private static MultiValueMap map;
+	public static MultiValueMap map;
 
 	/**
 	 * @param kana

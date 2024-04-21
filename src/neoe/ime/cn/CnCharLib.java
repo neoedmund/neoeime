@@ -12,7 +12,7 @@ import neoe.ime.Res;
 import neoe.ime.U;
 
 public class CnCharLib implements ImeLib {
-	private static String pydata;
+	public static String pydata;
 
 	 
 

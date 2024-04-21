@@ -9,6 +9,15 @@ import neoe.ne.Ime.ImeInterface;
 public class Pinyin extends GeneralIme implements ImeInterface {
 	public static final String NAME = "拼音";
 
+	@Override
+	public void reloadDict() throws Exception {
+		cnChar = null;
+		cnWord = null;
+		CnWordLib.map = null;
+		CnCharLib.pydata=null;
+		initLibs();
+	}
+
 	void initLibs() throws Exception {
 		synchronized (initLock) {
 			this.libs = new ArrayList();
@@ -27,8 +36,10 @@ public class Pinyin extends GeneralIme implements ImeInterface {
 	public String getImeName() {
 		return "拼音";
 	}
+
 	@Override
 	public boolean longTextMode() {
 		return false;
 	}
+
 }

@@ -18,6 +18,13 @@ public class En extends GeneralIme implements ImeInterface {
 
 	public static final String NAME = "English";
 
+	@Override
+	public void reloadDict() throws Exception {
+		enWord = null;
+		EnWord.words=null;
+		initLibs();
+	}
+
 	void initLibs() throws Exception {
 		synchronized (initLock) {
 			this.libs = new ArrayList();

@@ -22,7 +22,7 @@ import neoe.ime.U;
  * 
  */
 public class JpCharLib implements ImeLib {
-	private static HashMap pyMap;
+	public static HashMap pyMap;
 
 	private static HashMap pyRevMap;
 

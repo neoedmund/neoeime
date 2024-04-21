@@ -15,6 +15,13 @@ import neoe.ne.Ime.ImeInterface;
 public class CnEn extends GeneralIme implements ImeInterface {
 	public static final String NAME = "PinyinEnglish";
 
+	@Override
+	public void reloadDict() throws Exception {
+		cnChar = null;CnCharLib.pydata=null;
+		cnenDict = null;
+		initLibs();//not tested
+	}
+
 	void initLibs() throws Exception {
 		synchronized (initLock) {
 			this.libs = new ArrayList();
@@ -87,4 +94,5 @@ public class CnEn extends GeneralIme implements ImeInterface {
 		}
 		return ndl.data;
 	}
+
 }

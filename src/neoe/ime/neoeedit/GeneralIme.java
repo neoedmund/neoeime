@@ -78,7 +78,7 @@ public abstract class GeneralIme implements ImeInterface {
 //		if ((env.isAltDown()) || (env.isControlDown())) {
 //			return;
 //		}
-		int kc = keycode;//env.getKeyCode();
+		int kc = keycode;// env.getKeyCode();
 		if ((this.sb.length() > 0) && (kc == KeyEvent.VK_ESCAPE)) {
 			this.sb.setLength(0);
 			param.consumed = true;
@@ -106,7 +106,7 @@ public abstract class GeneralIme implements ImeInterface {
 //		if ((env.isAltDown()) || (env.isControlDown())) {
 //			return;
 //		}
-		char c = keyChar;//env.getKeyChar();
+		char c = keyChar;// env.getKeyChar();
 //		System.out.println("res.size=" + res.size());
 		int ps = longTextMode() ? pagesize2 : pagesize1;
 
@@ -154,19 +154,21 @@ public abstract class GeneralIme implements ImeInterface {
 				this.start += ps;
 			}
 			param.consumed = true;
-		}else if(isIgnoreKey(c)) {
-		return;
-		}else /* if (Character.isLetter(c)) */ {
+		} else if (isIgnoreKey(c)) {
+			return;
+		} else /* if (Character.isLetter(c)) */ {
 			this.sb.append(c);
 			consumePreedit(param);
 		}
 	}
 
-	  boolean isIgnoreKey(char c) {
-		  if (Character.isAlphabetic(c))return false;
-		  if (",.\\-".indexOf(c)>=0)return false;
-		  return true;
-	  };
+	boolean isIgnoreKey(char c) {
+		if (Character.isAlphabetic(c))
+			return false;
+		if (",.\\-".indexOf(c) >= 0)
+			return false;
+		return true;
+	};
 
 	StringBuffer sb = new StringBuffer();
 

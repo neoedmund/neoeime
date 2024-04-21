@@ -2,9 +2,7 @@ package neoe.ime.cn;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import neoe.ime.FileUtil;
 import neoe.ime.ImeLib;
@@ -17,7 +15,7 @@ public class CnWordLib implements ImeLib {
 
 	private static CnCharLib charLib;
 
-	private static MultiValueMap map;
+	public static MultiValueMap map;
 
 	private static String getPy(String w) {
 		StringBuffer sb = new StringBuffer();
