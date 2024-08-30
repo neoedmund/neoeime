@@ -233,7 +233,7 @@ public abstract class GeneralIme implements ImeInterface {
 			box.x = (clipBounds.width + clipBounds.x - maxWidth);
 		}
 		if (cursorY + height - clipBounds.y > clipBounds.height) {
-			box.y = (clipBounds.height + clipBounds.y - height);
+			box.y = (cursorY - height - g2.getFont().getSize()-8);
 		}
 		if (box.x < 0)
 			box.x = 0;
