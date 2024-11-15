@@ -100,20 +100,20 @@ public class JpCharLib implements ImeLib {
 					continue;
 				}
 			}
-//			if (i < kana.length() - 1) {
-//				String c2 = c + kana.charAt(i + 1);
-//				List list = (List) pyRevMap.get(c2);
-//				if (list != null && list.size() > 0) {
-//					i++;
-//					if (xtu) {
-//						xtu = false;
-//						sb.append(((String) list.get(0)).charAt(0));
-//					}
-//					sb.append(list.get(0));
-//					continue;
-//				}
-//
-//			}
+			if (i < kana.length() - 1) {// for conjucted
+				String c2 = c + kana.charAt(i + 1);
+				List list = (List) pyRevMap.get(c2);
+				if (list != null && list.size() > 0) {
+					i++;
+					if (xtu) {
+						xtu = false;
+						sb.append(((String) list.get(0)).charAt(0));
+					}
+					sb.append(list.get(0));
+					continue;
+				}
+
+			}
 			List list = (List) pyRevMap.get(c);
 			if (list != null && list.size() > 0) {
 				if (xtu) {
